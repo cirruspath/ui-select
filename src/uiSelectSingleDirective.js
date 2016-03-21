@@ -51,6 +51,8 @@ uis.directive('uiSelectSingle', ['$timeout','$compile', function($timeout, $comp
 
       scope.$on('uis:select', function (event, item) {
         $select.selected = item;
+		if (typeof item !== 'undefined')
+			$select.focusser.val(item.value);
       });
 
       scope.$on('uis:close', function (event, skipFocusser) {
@@ -64,8 +66,13 @@ uis.directive('uiSelectSingle', ['$timeout','$compile', function($timeout, $comp
         focusser.prop('disabled', true); //Will reactivate it on .close()
       });
 
-      //Idea from: https://github.com/ivaynberg/select2/blob/79b5bf6db918d7560bdd959109b7bcfb47edaf43/select2.js#L1954
-      var focusser = angular.element("<input ng-disabled='$select.disabled' class='ui-select-focusser ui-select-offscreen' type='text' id='{{ $select.focusserId }}' aria-label='{{ $select.focusserTitle }}' aria-haspopup='true' role='button' />");
+      
+      if(!angular.isDefined($select.selected))
+	  	$select.selected = {};
+		  
+      //Idea from: https://github.com/ivaynberg/select2/blob/79b5bf6db918d7560bdd959109b7bcfb47edaf43/select2.js#L1954	  
+      var focusser = angular.element("<input value='{{ $select.selected.value }}' ng-required='{{ $parent.config.required }}' ng-disabled='$select.disabled' class='ui-select-focusser ui-select-offscreen' type='text' id='{{ $select.focusserId }}' aria-label='{{ $select.focusserTitle }}' aria-haspopup='true' role='button' />");
+
       $compile(focusser)(scope);
       $select.focusser = focusser;
 
